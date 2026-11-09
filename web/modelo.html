@@ -1,0 +1,361 @@
+<title>Expert Lei 14.133</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: uma coluna de leitura. Pergunta no topo, resposta conferida, depois os dispositivos que a sustentam. */
+:root {
+  --fundo: #f4f6f5;
+  --papel: #ffffff;
+  --tinta: #15211e;
+  --tinta-2: #55645f;
+  --linha: #d5dcd9;
+  --destaque: #0a5f6b;
+  --destaque-fraco: #e2eff0;
+  --ok: #1d6b3c;
+  --ok-fraco: #e3f1e7;
+  --erro: #a3271b;
+  --erro-fraco: #f8e6e3;
+  --aviso: #7a5600;
+  --aviso-fraco: #f6edd3;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fundo: #0f1716; --papel: #17211f; --tinta: #e6eeeb; --tinta-2: #9aaaa5; --linha: #2b3936;
+    --destaque: #6cc3cf; --destaque-fraco: #16313a; --ok: #7fd09c; --ok-fraco: #153021;
+    --erro: #f09a8e; --erro-fraco: #3a1a16; --aviso: #e6c065; --aviso-fraco: #33290f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fundo: #0f1716; --papel: #17211f; --tinta: #e6eeeb; --tinta-2: #9aaaa5; --linha: #2b3936;
+  --destaque: #6cc3cf; --destaque-fraco: #16313a; --ok: #7fd09c; --ok-fraco: #153021;
+  --erro: #f09a8e; --erro-fraco: #3a1a16; --aviso: #e6c065; --aviso-fraco: #33290f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fundo); color: var(--tinta); font-family: var(--sans); font-size: 16px; line-height: 1.55;
+  padding-block: 24px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+header { display: flex; flex-direction: column; gap: 6px; }
+h1 { font-size: 26px; line-height: 1.2; font-weight: 600; margin: 0; text-wrap: balance; }
+h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tinta-2); margin: 0; }
+.sub { color: var(--tinta-2); margin: 0; font-size: 15px; }
+.rotulo-teste { align-self: flex-start; font-family: var(--mono); font-size: 12px; color: var(--aviso); background: var(--aviso-fraco); padding: 2px 8px; border-radius: 4px; }
+
+form { display: flex; flex-direction: column; gap: 12px; }
+textarea {
+  width: 100%; min-height: 84px; resize: vertical; font: inherit; color: var(--tinta); background: var(--papel);
+  border: 1px solid var(--linha); border-radius: 8px; padding: 12px;
+}
+textarea:focus-visible, button:focus-visible { outline: 2px solid var(--destaque); outline-offset: 2px; }
+.acoes { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button { font: inherit; cursor: pointer; border-radius: 8px; border: 1px solid var(--linha); background: var(--papel); color: var(--tinta); padding: 8px 14px; }
+button.principal { background: var(--destaque); border-color: var(--destaque); color: var(--papel); font-weight: 600; }
+button:disabled { opacity: 0.55; cursor: default; }
+.exemplos { display: flex; flex-wrap: wrap; gap: 8px; }
+.exemplos button { font-size: 14px; padding: 5px 10px; color: var(--tinta-2); }
+
+section { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.resposta { background: var(--papel); border: 1px solid var(--linha); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.texto-resposta { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.texto-resposta mark { background: var(--ok-fraco); color: var(--ok); font-family: var(--mono); font-size: 0.9em; padding: 1px 4px; border-radius: 4px; }
+.texto-resposta mark.ruim { background: var(--erro-fraco); color: var(--erro); }
+.selo { align-self: flex-start; font-family: var(--mono); font-size: 13px; font-weight: 500; padding: 3px 10px; border-radius: 4px; border: 1px solid currentColor; }
+.selo.ok { color: var(--ok); background: var(--ok-fraco); }
+.selo.erro { color: var(--erro); background: var(--erro-fraco); }
+.selo.neutro { color: var(--tinta-2); background: var(--fundo); }
+.motivos { margin: 0; padding-left: 20px; color: var(--erro); font-size: 14px; }
+.nota { color: var(--tinta-2); font-size: 14px; margin: 0; }
+
+.dispositivos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.dispositivos li { padding: 12px 0; border-top: 1px solid var(--linha); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.cit { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--destaque); }
+.onde { font-size: 12px; color: var(--tinta-2); }
+.disp-texto { margin: 0; font-size: 15px; overflow-wrap: anywhere; }
+.valor { font-size: 14px; background: var(--destaque-fraco); color: var(--tinta); padding: 6px 10px; border-radius: 6px; font-variant-numeric: tabular-nums; }
+.valor b { font-family: var(--mono); font-weight: 500; }
+footer { font-size: 13px; color: var(--tinta-2); border-top: 1px solid var(--linha); padding-top: 16px; }
+footer p { margin: 0 0 6px; }
+@media (prefers-reduced-motion: no-preference) { .pensando::after { content: "…"; animation: pisca 1.2s infinite; } @keyframes pisca { 50% { opacity: 0.2; } } }
+</style>
+
+<main>
+  <header>
+    <span class="rotulo-teste">página de teste</span>
+    <h1>Expert Lei 14.133</h1>
+    <p class="sub">Pergunte sobre a Lei de Licitações e Contratos. A resposta só aparece depois que cada citação é conferida no texto da lei.</p>
+  </header>
+
+  <form id="form-pergunta">
+    <label for="pergunta"><h2>Sua pergunta</h2></label>
+    <textarea id="pergunta" name="pergunta" placeholder="Ex.: Até que valor posso dispensar licitação em compras?"></textarea>
+    <div class="acoes">
+      <button type="submit" class="principal" id="btn-perguntar">Perguntar</button>
+      <button type="button" id="btn-parar" hidden>Parar</button>
+    </div>
+    <div class="exemplos" id="exemplos">
+      <button type="button">Até que valor posso dispensar licitação em compras?</button>
+      <button type="button">Qual o prazo para impugnar o edital?</button>
+      <button type="button">Quais sanções podem ser aplicadas ao contratado?</button>
+      <button type="button">O que diz o art. 75, II?</button>
+      <button type="button">Quando uma proposta de obra é inexequível?</button>
+    </div>
+  </form>
+
+  <section id="sec-resposta" hidden>
+    <h2>Resposta</h2>
+    <div class="resposta">
+      <span class="selo neutro" id="selo">aguardando</span>
+      <p class="texto-resposta" id="texto-resposta"></p>
+      <ul class="motivos" id="motivos" hidden></ul>
+      <p class="nota" id="nota-resposta" hidden></p>
+    </div>
+  </section>
+
+  <section id="sec-dispositivos">
+    <h2 id="titulo-dispositivos">Dispositivos consultados</h2>
+    <p class="nota" id="vazio">Faça uma pergunta para ver os dispositivos da lei que a busca encontra.</p>
+    <ul class="dispositivos" id="lista-dispositivos"></ul>
+  </section>
+
+  <footer>
+    <p id="rodape-corpus"></p>
+    <p>Ferramenta de pesquisa em teste. Não substitui parecer jurídico. Regras de estados e municípios não estão incluídas.</p>
+  </footer>
+</main>
+
+<script>/*NUCLEO*/</script>
+<script id="dados-corpus" type="application/json">/*CORPUS*/</script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var norma = JSON.parse($("dados-corpus").textContent);
+  var nucleo = Nucleo.criar(norma);
+  var corpus = nucleo.corpus;
+  var sample = null;
+  var controle = null;
+
+  var comValor = norma.dispositivos.filter(function (d) { return d.valorAtualizado; });
+  $("rodape-corpus").textContent =
+    "Corpus: Lei nº 14.133/2021, texto compilado em " + norma.compiladoEm.split("-").reverse().join("/") + ", " +
+    norma.dispositivos.length + " dispositivos. Valores em reais conforme " +
+    (comValor[0] ? comValor[0].valorAtualizado.norma : "o texto da lei") + ".";
+
+  if (window.claude && window.claude.use) {
+    window.claude.use("sample").then(function (s) { sample = s; });
+  }
+
+  function esc(s) {
+    return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+  }
+  function onde(d) {
+    return [d.contexto.capitulo, d.contexto.secao].filter(Boolean).join(" · ");
+  }
+  function valorTexto(d) {
+    var v = d.valorAtualizado;
+    return v ? "Valor vigente: " + v.valor + ", desde " + v.vigenteDesde.split("-").reverse().join("/") + " (" + v.norma + "). O valor no texto é o original." : "";
+  }
+
+  function mostrarDispositivos(resultados) {
+    var ul = $("lista-dispositivos");
+    ul.textContent = "";
+    $("vazio").hidden = resultados.length > 0;
+    if (!resultados.length) { $("vazio").textContent = "A busca não encontrou dispositivos para essa pergunta."; }
+    resultados.forEach(function (r) {
+      var d = r.dispositivo;
+      var li = document.createElement("li");
+      var cit = document.createElement("span"); cit.className = "cit"; cit.textContent = d.citacao;
+      var lugar = document.createElement("span"); lugar.className = "onde"; lugar.textContent = onde(d);
+      var p = document.createElement("p"); p.className = "disp-texto";
+      p.textContent = d.texto.length > 600 ? d.texto.slice(0, 600) + "…" : d.texto;
+      li.append(cit, lugar, p);
+      if (d.valorAtualizado) {
+        var v = document.createElement("div"); v.className = "valor";
+        v.innerHTML = "Valor vigente: <b>" + esc(d.valorAtualizado.valor) + "</b> desde " +
+          esc(d.valorAtualizado.vigenteDesde.split("-").reverse().join("/")) + " (" + esc(d.valorAtualizado.norma) + ")";
+        li.append(v);
+      }
+      ul.append(li);
+    });
+  }
+
+  // Contexto para o modelo: os 3 artigos mais relevantes por inteiro, mais os demais dispositivos achados.
+  function montarContexto(resultados) {
+    var incluidos = {};
+    var linhas = [];
+    function incluir(d) {
+      if (incluidos[d.id] || !d.vigente) return;
+      incluidos[d.id] = true;
+      var texto = d.texto.length > 1200 ? d.texto.slice(0, 1200) + " [...]" : d.texto;
+      linhas.push("[" + d.citacao + "] " + texto + (d.valorAtualizado ? " {" + valorTexto(d) + "}" : ""));
+    }
+    var artigos = [];
+    resultados.forEach(function (r) {
+      if (artigos.indexOf(r.dispositivo.idArtigo) === -1) artigos.push(r.dispositivo.idArtigo);
+    });
+    artigos.slice(0, 3).forEach(function (idArtigo) {
+      var doArtigo = norma.dispositivos.filter(function (d) { return d.idArtigo === idArtigo; });
+      doArtigo.slice(0, 60).forEach(incluir);
+    });
+    resultados.forEach(function (r) {
+      corpus.cadeia(r.dispositivo.id).forEach(incluir);
+    });
+    return linhas.join("\n");
+  }
+
+  var REGRAS =
+    "Você é um assistente de pesquisa sobre a Lei nº 14.133/2021 (Lei de Licitações e Contratos Administrativos).\n" +
+    "Responda em português, de forma direta e técnica, em texto simples, sem markdown.\n" +
+    "Regras obrigatórias:\n" +
+    "1. Use somente os dispositivos fornecidos abaixo. Não use conhecimento de memória.\n" +
+    "2. Toda afirmação normativa traz a citação do dispositivo, no formato exato entre colchetes da lista, sem os colchetes. Exemplo: art. 75, caput, inciso II.\n" +
+    "3. Cite apenas dispositivos da Lei nº 14.133/2021 que estejam na lista. Não cite artigos de outras normas.\n" +
+    "4. Quando o dispositivo trouxer valor vigente entre chaves, informe o valor vigente e o decreto que o fixou, e diga que o valor no texto da lei é o original.\n" +
+    "5. Se os dispositivos fornecidos não respondem à pergunta, responda apenas: SEM_COBERTURA\n" +
+    "6. Não dê orientação conclusiva sobre caso concreto; explique o que a lei dispõe.\n" +
+    "7. Termine com a frase: Esta resposta não substitui parecer jurídico.\n";
+
+  function promptPara(pergunta, contexto, motivos) {
+    var p = REGRAS + "\nDISPOSITIVOS:\n" + contexto + "\n\nPERGUNTA: " + pergunta + "\n";
+    if (motivos && motivos.length) {
+      p += "\nSua resposta anterior foi reprovada na conferência de citações pelos motivos abaixo. Reescreva corrigindo:\n- " + motivos.join("\n- ") + "\n";
+    }
+    return p;
+  }
+
+  function selo(classe, texto) { var s = $("selo"); s.className = "selo " + classe; s.textContent = texto; }
+
+  function renderizarConferida(texto, verificacao) {
+    var html = esc(texto);
+    verificacao.citacoes.forEach(function (c) {
+      var alvo = esc(c.trecho);
+      var i = html.indexOf(alvo);
+      if (i === -1) return;
+      // Evita marcar dentro de uma marcação já feita.
+      var antes = html.slice(0, i);
+      if (antes.lastIndexOf("<mark") > antes.lastIndexOf("</mark>")) return;
+      html = antes + '<mark class="' + (c.status === "ok" ? "" : "ruim") + '">' + alvo + "</mark>" + html.slice(i + alvo.length);
+    });
+    $("texto-resposta").innerHTML = html;
+  }
+
+  function mensagemDeErro(codigo) {
+    if (codigo === "not_granted" || codigo === "sampling_disabled" || codigo === "not_declared" || codigo === "capability_disabled")
+      return "A geração de resposta não está liberada nesta visualização. Os dispositivos encontrados aparecem abaixo.";
+    if (codigo === "rate_limited") return "Limite de uso atingido. Tente de novo mais tarde.";
+    if (codigo === "session_expired") return "Sessão expirada. Entre de novo no Claude e repita a pergunta.";
+    if (codigo === "refused") return "O modelo recusou essa pergunta. Reformule e tente de novo.";
+    return "A geração falhou por um problema temporário. Tente de novo.";
+  }
+
+  function ocupado(sim) {
+    $("btn-perguntar").disabled = sim;
+    $("btn-parar").hidden = !sim;
+    $("texto-resposta").classList.toggle("pensando", sim);
+  }
+
+  async function gerar(pergunta, contexto, motivos) {
+    var resultado = await sample(promptPara(pergunta, contexto, motivos), {
+      signal: controle.signal,
+      onText: function (u) { $("texto-resposta").classList.remove("pensando"); $("texto-resposta").textContent = u.text; },
+    });
+    return resultado.text.trim();
+  }
+
+  async function perguntar(pergunta) {
+    $("motivos").hidden = true; $("nota-resposta").hidden = true;
+    var resultados = await nucleo.buscar(pergunta, 10);
+    mostrarDispositivos(resultados);
+    $("sec-resposta").hidden = false;
+
+    if (!resultados.length) {
+      selo("neutro", "sem cobertura");
+      $("texto-resposta").textContent = "O corpus não cobre essa pergunta.";
+      return;
+    }
+    if (!sample) {
+      selo("neutro", "só busca");
+      $("texto-resposta").textContent = "A geração de resposta não está disponível nesta visualização. Os dispositivos encontrados aparecem abaixo.";
+      return;
+    }
+
+    var contexto = montarContexto(resultados);
+    controle = new AbortController();
+    ocupado(true);
+    selo("neutro", "gerando");
+    $("texto-resposta").textContent = "Consultando a lei";
+    try {
+      var texto = await gerar(pergunta, contexto, null);
+      var tentativas = 1;
+      var verificacao = null;
+      if (texto.indexOf("SEM_COBERTURA") === -1) {
+        verificacao = nucleo.verificar(texto);
+        if (!verificacao.aprovada) {
+          // Uma única nova tentativa, com os motivos da reprovação.
+          selo("neutro", "citação reprovada, gerando de novo");
+          $("texto-resposta").textContent = "Corrigindo citações";
+          $("texto-resposta").classList.add("pensando");
+          texto = await gerar(pergunta, contexto, verificacao.motivos);
+          tentativas = 2;
+          verificacao = texto.indexOf("SEM_COBERTURA") === -1 ? nucleo.verificar(texto) : null;
+        }
+      }
+      if (!verificacao) {
+        selo("neutro", "sem cobertura");
+        $("texto-resposta").textContent = "Os dispositivos encontrados não respondem a essa pergunta. O expert prefere não responder a responder de memória.";
+      } else if (verificacao.aprovada) {
+        var n = verificacao.citacoes.length;
+        selo("ok", n + (n === 1 ? " citação conferida" : " citações conferidas"));
+        renderizarConferida(texto, verificacao);
+        if (tentativas === 2) {
+          $("nota-resposta").hidden = false;
+          $("nota-resposta").textContent = "A primeira versão foi reprovada na conferência e refeita.";
+        }
+      } else {
+        selo("erro", "resposta bloqueada");
+        $("texto-resposta").textContent = "A resposta foi bloqueada porque trazia citação que não confere com o texto da lei.";
+        var ul = $("motivos"); ul.textContent = ""; ul.hidden = false;
+        verificacao.motivos.forEach(function (m) { var li = document.createElement("li"); li.textContent = m; ul.append(li); });
+      }
+    } catch (e) {
+      if (e && e.code === "cancelled") {
+        selo("neutro", "interrompida");
+        $("texto-resposta").textContent = "Geração interrompida.";
+      } else {
+        selo("neutro", "só busca");
+        $("texto-resposta").textContent = mensagemDeErro(e && e.code);
+      }
+    } finally {
+      ocupado(false);
+    }
+  }
+
+  $("form-pergunta").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var p = $("pergunta").value.trim();
+    if (p) perguntar(p);
+  });
+  $("pergunta").addEventListener("keydown", function (ev) {
+    if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) $("form-pergunta").requestSubmit();
+  });
+  $("btn-parar").addEventListener("click", function () { if (controle) controle.abort(); });
+  $("exemplos").addEventListener("click", function (ev) {
+    if (ev.target.tagName !== "BUTTON" || $("btn-perguntar").disabled) return;
+    $("pergunta").value = ev.target.textContent;
+    perguntar(ev.target.textContent);
+  });
+
+  // Estado inicial: uma busca de exemplo, sem chamar o modelo.
+  nucleo.buscar("dispensa de licitação por valor em compras", 5).then(function (r) {
+    if ($("lista-dispositivos").children.length) return;
+    mostrarDispositivos(r);
+    $("titulo-dispositivos").textContent = "Dispositivos consultados (exemplo: dispensa por valor em compras)";
+  });
+})();
+</script>
