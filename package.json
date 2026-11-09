@@ -1,0 +1,20 @@
+{
+  "name": "experts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Núcleo do Expert Lei 14.133: ingestão, busca, verificação de citações e avaliação",
+  "scripts": {
+    "ingerir": "tsx scripts/ingerir.ts",
+    "consultar": "tsx scripts/consultar.ts",
+    "avaliar": "tsx scripts/avaliar.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
