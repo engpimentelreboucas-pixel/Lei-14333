@@ -1,0 +1,20 @@
+{
+  "norma": "Decreto nº 12.807, de 29 de dezembro de 2025",
+  "ementa": "Atualiza os valores estabelecidos na Lei nº 14.133, de 1º de abril de 2021.",
+  "publicacao": "DOU de 30/12/2025, Seção 1, p. 17",
+  "vigenteDesde": "2026-01-01",
+  "revoga": "Decreto nº 12.343, de 30 de dezembro de 2024",
+  "fonte": "https://www2.camara.leg.br/legin/fed/decret/2025/decreto-12807-29-dezembro-2025-798615-anexo-pe.pdf",
+  "observacao": "O art. 3º atribui ao Ministro da Gestão e da Inovação em Serviços Públicos as atualizações dos anos seguintes; conferir ato novo a cada virada de ano.",
+  "valores": [
+    { "dispositivo": "art-6/inc-XXII", "valor": "R$ 261.968.421,04" },
+    { "dispositivo": "art-37/par-2", "valor": "R$ 392.952,63" },
+    { "dispositivo": "art-70/inc-III", "valor": "R$ 392.952,63" },
+    { "dispositivo": "art-75/inc-I", "valor": "R$ 130.984,20" },
+    { "dispositivo": "art-75/inc-II", "valor": "R$ 65.492,11" },
+    { "dispositivo": "art-75/inc-IV/ali-c", "valor": "R$ 392.952,63" },
+    { "dispositivo": "art-75/par-7", "valor": "R$ 10.478,74" },
+    { "dispositivo": "art-95/par-2", "valor": "R$ 13.098,41" },
+    { "dispositivo": "art-184-A", "valor": "R$ 1.646.430,90" }
+  ]
+}

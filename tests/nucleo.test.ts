@@ -110,6 +110,28 @@ describe("parser", () => {
   });
 });
 
+describe("valores atualizados", () => {
+  it("o corpus gerado traz o valor do decreto nos 9 dispositivos com valor em reais", () => {
+    const gerado = Corpus.deArquivo("corpus/gerado/lei-14133.json");
+    const comValor = gerado.dispositivos.filter((d) => d.valorAtualizado);
+    expect(comValor).toHaveLength(9);
+    const d = gerado.obter("art-75/inc-II");
+    expect(d?.valorAtualizado).toEqual({
+      valor: "R$ 65.492,11",
+      norma: "Decreto nº 12.807, de 29 de dezembro de 2025",
+      vigenteDesde: "2026-01-01",
+    });
+    expect(gerado.obter("art-75/inc-I")?.valorAtualizado?.valor).toBe("R$ 130.984,20");
+  });
+
+  it("o corpus gerado está em dia com o texto-fonte", () => {
+    const gerado = Corpus.deArquivo("corpus/gerado/lei-14133.json");
+    expect(gerado.dispositivos.map((d) => [d.id, d.texto, d.status])).toEqual(
+      corpus.dispositivos.map((d) => [d.id, d.texto, d.status]),
+    );
+  });
+});
+
 describe("referências", () => {
   const unica = (texto: string) => {
     const refs = extrairReferencias(texto);

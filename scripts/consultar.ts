@@ -13,5 +13,9 @@ for (const r of resultados) {
   const d = r.dispositivo;
   console.log(`\n[${r.origens.join("+")}] ${d.citacao}`);
   console.log(`  ${d.texto.slice(0, 260)}${d.texto.length > 260 ? "..." : ""}`);
+  if (d.valorAtualizado) {
+    const v = d.valorAtualizado;
+    console.log(`  VALOR VIGENTE: ${v.valor} desde ${v.vigenteDesde} (${v.norma}). O valor no texto acima é o original.`);
+  }
   if (d.anotacoes.length) console.log(`  Anotações: ${d.anotacoes.join(" ")}`);
 }

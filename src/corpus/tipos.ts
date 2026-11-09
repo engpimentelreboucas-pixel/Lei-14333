@@ -43,6 +43,16 @@ export interface Dispositivo {
   contemTextoDeOutraNorma: boolean;
   /** Posição na ordem de leitura da norma. */
   ordem: number;
+  /** Valor em reais atualizado por norma posterior; prevalece sobre o valor escrito em `texto`. */
+  valorAtualizado?: ValorAtualizado;
+}
+
+export interface ValorAtualizado {
+  valor: string;
+  /** Norma que fixou o valor, ex.: "Decreto nº 12.807, de 29 de dezembro de 2025". */
+  norma: string;
+  /** Data de início de vigência do valor (ISO). */
+  vigenteDesde: string;
 }
 
 export interface Norma {

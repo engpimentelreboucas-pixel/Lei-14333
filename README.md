@@ -37,7 +37,8 @@ pdftotext -layout L14133.pdf corpus/fontes/lei-14133.txt && npm run ingerir
 
 - 1.459 dispositivos; 194 artigos numerados de 1 a 194 (172 e 188 vetados), mais os arts. 44-A e 184-A.
 - Busca só lexical: artigo esperado entre os 5 primeiros em 93% das perguntas de referência e em 1º em 67%.
-- 24 testes automatizados.
+- 9 dispositivos com valor em reais atualizado pelo Decreto nº 12.807/2025.
+- 26 testes automatizados.
 
 ## Regras de vigência aplicadas pelo parser
 
@@ -53,10 +54,11 @@ Versões não vigentes recebem sufixo no id (`art-87@v1`). O id da versão vigen
 
 ## Limites conhecidos
 
-- **Valores em reais desatualizados.** Os valores no texto da lei (por exemplo, os limites de
-  dispensa do art. 75, I e II) são os originais. Os valores em vigor vêm de decreto de
-  atualização, indicado nas `anotacoes` do dispositivo ("Vide Decreto nº ..."). O expert não
-  pode responder valores só com este corpus; os decretos precisam ser ingeridos.
+- **Valores em reais.** O texto da lei traz os valores originais. Os vigentes ficam em
+  `valorAtualizado`, carregados de `corpus/fontes/valores-decreto-12807.json` (Decreto nº 12.807/2025,
+  em vigor desde 01/01/2026; tabela transcrita da publicação da Câmara dos Deputados). O decreto
+  delega as próximas atualizações ao Ministro da Gestão: a cada virada de ano é preciso conferir o
+  ato novo e trocar o arquivo. A ingestão falha se algum dispositivo com valor ficar sem atualização.
 - **Vigência por heurística.** As regras acima foram conferidas nos 22 casos de versão não
   vigente desta compilação. Uma compilação futura precisa de nova conferência.
 - **Sem datas de vigência.** O status é o da data da compilação (2026-11-09). Datas de início e
@@ -71,7 +73,7 @@ Versões não vigentes recebem sufixo no id (`art-87@v1`). O id da versão vigen
 ## Próximos passos
 
 1. Postgres com pgvector: persistir dispositivos e implementar `IndiceVetorial`.
-2. Ingerir decretos de atualização de valores e demais normas da lista do corpus.
+2. Ingerir as demais normas da lista do corpus (decretos regulamentadores, instruções normativas).
 3. Orquestração do expert: busca, geração com LLM, verificação de citações, nova tentativa ou recusa.
 4. Ampliar as perguntas de referência para 200 a 300, com revisão de quem domina a lei.
 5. API e chat web com streaming.
