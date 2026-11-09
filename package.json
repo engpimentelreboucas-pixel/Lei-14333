@@ -9,7 +9,10 @@
     "consultar": "tsx scripts/consultar.ts",
     "avaliar": "tsx scripts/avaliar.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "perguntar": "tsx scripts/perguntar.ts",
+    "servidor": "tsx scripts/servidor.ts",
+    "montar-pagina": "esbuild web/entrada.ts --bundle --format=iife --global-name=Nucleo --platform=browser --alias:node:fs=./web/fs-stub.js --minify --outfile=web/nucleo.js && node web/montar.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -17,5 +20,8 @@
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.7.0"
   }
 }

@@ -1,8 +1,8 @@
 # Experts — núcleo do Expert Lei 14.133
 
 Primeiro corte da fase 1 da especificação do MVP: ingestão da Lei nº 14.133/2021 em
-dispositivos, busca, verificador de citações e avaliação. Ainda sem interface, sem LLM
-e sem banco de dados.
+dispositivos, busca, verificador de citações avaliação e orquestração do expert com a API do Claude. Ainda sem banco de dados e sem
+aplicação web.
 
 ## O que existe
 
@@ -13,6 +13,10 @@ e sem banco de dados.
 | Referências | `src/busca/referencia.ts` | Lê citações em texto livre ("art. 75, II", "§ 4º do art. 59") e resolve contra o corpus |
 | Busca | `src/busca/hibrida.ts`, `src/busca/lexical.ts` | Referência exata + BM25, com ponto de encaixe para busca vetorial |
 | Verificador | `src/citacoes/verificador.ts` | Confere cada citação de uma resposta; reprova citação inexistente, não vigente ou não conferível |
+| Expert | `src/expert/expert.ts` | Orquestra busca, geração, conferência de citações, uma nova tentativa e recusa |
+| Modelo | `src/expert/claude.ts`, `src/expert/modelo.ts` | Conector da API do Claude e modelo simulado para testes |
+| API | `src/api/servidor.ts` | `POST /perguntar` e `GET /saude` |
+| Página de teste | `web/` | Mesmo fluxo rodando no navegador, publicado como artifact |
 | Avaliação | `src/avaliacao/runner.ts`, `avaliacao/perguntas.json` | 30 perguntas de referência com o artigo esperado |
 
 ## Como usar
@@ -27,6 +31,24 @@ npm run avaliar                                  # desempenho da busca nas pergu
 npm test
 ```
 
+Com o modelo real (requer a variável de ambiente `ANTHROPIC_API_KEY`; veja `.env.example`):
+
+```bash
+export ANTHROPIC_API_KEY=...                     # a chave nunca entra no repositório
+npm run perguntar -- "Qual o prazo para impugnar o edital?"
+npm run servidor                                 # API em http://localhost:3000
+curl -s localhost:3000/perguntar -d '{"pergunta":"O que diz o art. 75, II?","perfil":"fornecedor"}'
+```
+
+Desfechos de uma pergunta: `resposta` (todas as citações conferidas), `sem_cobertura` (a busca não
+achou nada ou o modelo declarou que o contexto não responde) e `bloqueada` (o modelo insistiu em
+citação que não confere; o texto dele não é entregue).
+
+Perguntas que só pedem o conteúdo de um dispositivo vão para o modelo rápido; as demais, para o
+padrão. Depois de uma reprovação, a nova tentativa usa sempre o padrão.
+
+A API não tem autenticação nem limite de uso. Não a exponha na internet antes da fase de venda.
+
 Para reingerir a partir de um PDF novo do Planalto (requer poppler):
 
 ```bash
@@ -38,7 +60,7 @@ pdftotext -layout L14133.pdf corpus/fontes/lei-14133.txt && npm run ingerir
 - 1.459 dispositivos; 194 artigos numerados de 1 a 194 (172 e 188 vetados), mais os arts. 44-A e 184-A.
 - Busca só lexical: artigo esperado entre os 5 primeiros em 93% das perguntas de referência e em 1º em 67%.
 - 9 dispositivos com valor em reais atualizado pelo Decreto nº 12.807/2025.
-- 26 testes automatizados.
+- 35 testes automatizados. A orquestração é testada com modelo simulado; ainda não rodou contra a API real.
 
 ## Regras de vigência aplicadas pelo parser
 
@@ -74,7 +96,7 @@ Versões não vigentes recebem sufixo no id (`art-87@v1`). O id da versão vigen
 
 1. Postgres com pgvector: persistir dispositivos e implementar `IndiceVetorial`.
 2. Ingerir as demais normas da lista do corpus (decretos regulamentadores, instruções normativas).
-3. Orquestração do expert: busca, geração com LLM, verificação de citações, nova tentativa ou recusa.
+3. Rodar a avaliação com o modelo real e medir Haiku contra Sonnet.
 4. Ampliar as perguntas de referência para 200 a 300, com revisão de quem domina a lei.
 5. API e chat web com streaming.
 

@@ -157,11 +157,6 @@ footer p { margin: 0 0 6px; }
   function onde(d) {
     return [d.contexto.capitulo, d.contexto.secao].filter(Boolean).join(" · ");
   }
-  function valorTexto(d) {
-    var v = d.valorAtualizado;
-    return v ? "Valor vigente: " + v.valor + ", desde " + v.vigenteDesde.split("-").reverse().join("/") + " (" + v.norma + "). O valor no texto é o original." : "";
-  }
-
   function mostrarDispositivos(resultados) {
     var ul = $("lista-dispositivos");
     ul.textContent = "";
@@ -183,50 +178,6 @@ footer p { margin: 0 0 6px; }
       }
       ul.append(li);
     });
-  }
-
-  // Contexto para o modelo: os 3 artigos mais relevantes por inteiro, mais os demais dispositivos achados.
-  function montarContexto(resultados) {
-    var incluidos = {};
-    var linhas = [];
-    function incluir(d) {
-      if (incluidos[d.id] || !d.vigente) return;
-      incluidos[d.id] = true;
-      var texto = d.texto.length > 1200 ? d.texto.slice(0, 1200) + " [...]" : d.texto;
-      linhas.push("[" + d.citacao + "] " + texto + (d.valorAtualizado ? " {" + valorTexto(d) + "}" : ""));
-    }
-    var artigos = [];
-    resultados.forEach(function (r) {
-      if (artigos.indexOf(r.dispositivo.idArtigo) === -1) artigos.push(r.dispositivo.idArtigo);
-    });
-    artigos.slice(0, 3).forEach(function (idArtigo) {
-      var doArtigo = norma.dispositivos.filter(function (d) { return d.idArtigo === idArtigo; });
-      doArtigo.slice(0, 60).forEach(incluir);
-    });
-    resultados.forEach(function (r) {
-      corpus.cadeia(r.dispositivo.id).forEach(incluir);
-    });
-    return linhas.join("\n");
-  }
-
-  var REGRAS =
-    "Você é um assistente de pesquisa sobre a Lei nº 14.133/2021 (Lei de Licitações e Contratos Administrativos).\n" +
-    "Responda em português, de forma direta e técnica, em texto simples, sem markdown.\n" +
-    "Regras obrigatórias:\n" +
-    "1. Use somente os dispositivos fornecidos abaixo. Não use conhecimento de memória.\n" +
-    "2. Toda afirmação normativa traz a citação do dispositivo, no formato exato entre colchetes da lista, sem os colchetes. Exemplo: art. 75, caput, inciso II.\n" +
-    "3. Cite apenas dispositivos da Lei nº 14.133/2021 que estejam na lista. Não cite artigos de outras normas.\n" +
-    "4. Quando o dispositivo trouxer valor vigente entre chaves, informe o valor vigente e o decreto que o fixou, e diga que o valor no texto da lei é o original.\n" +
-    "5. Se os dispositivos fornecidos não respondem à pergunta, responda apenas: SEM_COBERTURA\n" +
-    "6. Não dê orientação conclusiva sobre caso concreto; explique o que a lei dispõe.\n" +
-    "7. Termine com a frase: Esta resposta não substitui parecer jurídico.\n";
-
-  function promptPara(pergunta, contexto, motivos) {
-    var p = REGRAS + "\nDISPOSITIVOS:\n" + contexto + "\n\nPERGUNTA: " + pergunta + "\n";
-    if (motivos && motivos.length) {
-      p += "\nSua resposta anterior foi reprovada na conferência de citações pelos motivos abaixo. Reescreva corrigindo:\n- " + motivos.join("\n- ") + "\n";
-    }
-    return p;
   }
 
   function selo(classe, texto) { var s = $("selo"); s.className = "selo " + classe; s.textContent = texto; }
@@ -260,8 +211,8 @@ footer p { margin: 0 0 6px; }
     $("texto-resposta").classList.toggle("pensando", sim);
   }
 
-  async function gerar(pergunta, contexto, motivos) {
-    var resultado = await sample(promptPara(pergunta, contexto, motivos), {
+  async function gerar(pergunta, resultados, motivos) {
+    var resultado = await sample(nucleo.prompt(pergunta, resultados, motivos || undefined), {
       signal: controle.signal,
       onText: function (u) { $("texto-resposta").classList.remove("pensando"); $("texto-resposta").textContent = u.text; },
     });
@@ -285,25 +236,24 @@ footer p { margin: 0 0 6px; }
       return;
     }
 
-    var contexto = montarContexto(resultados);
     controle = new AbortController();
     ocupado(true);
     selo("neutro", "gerando");
     $("texto-resposta").textContent = "Consultando a lei";
     try {
-      var texto = await gerar(pergunta, contexto, null);
+      var texto = await gerar(pergunta, resultados, null);
       var tentativas = 1;
       var verificacao = null;
-      if (texto.indexOf("SEM_COBERTURA") === -1) {
+      if (texto.indexOf(nucleo.SEM_COBERTURA) === -1) {
         verificacao = nucleo.verificar(texto);
         if (!verificacao.aprovada) {
           // Uma única nova tentativa, com os motivos da reprovação.
           selo("neutro", "citação reprovada, gerando de novo");
           $("texto-resposta").textContent = "Corrigindo citações";
           $("texto-resposta").classList.add("pensando");
-          texto = await gerar(pergunta, contexto, verificacao.motivos);
+          texto = await gerar(pergunta, resultados, verificacao.motivos);
           tentativas = 2;
-          verificacao = texto.indexOf("SEM_COBERTURA") === -1 ? nucleo.verificar(texto) : null;
+          verificacao = texto.indexOf(nucleo.SEM_COBERTURA) === -1 ? nucleo.verificar(texto) : null;
         }
       }
       if (!verificacao) {
